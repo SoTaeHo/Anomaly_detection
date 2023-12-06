@@ -6,7 +6,7 @@ import json, time
 import statistics
 
 # input_dir = "./input/"
-input_dir = "C:/Users/kacelab/Desktop/data/Training/labeling/"
+input_dir = "C:/Users/kacelab/Desktop/anomaly/Training/labeling/"
 output_dir = "labels/"
 video_dir = "./input/video/"
 

@@ -49,9 +49,6 @@ for idx, item in enumerate(anomaly):
             # input.append(adjust_length(tuple_list))
             input.append(adjust_length_int(int_list))
             label.append(split_line[-1])
-#
-# for item in input:
-#     print(len(item))
 
 # 데이터를 학습 및 테스트 세트로 분리
 X_train, X_test, y_train, y_test = train_test_split(input, label, test_size=0.2, random_state=42)
@@ -86,3 +83,4 @@ plt.xlabel("Sample Index")
 plt.ylabel("Probability / Label")
 plt.legend()
 plt.show()
+
