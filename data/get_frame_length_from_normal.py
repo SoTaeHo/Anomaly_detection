@@ -1,8 +1,6 @@
-import re
 import xml.etree.ElementTree as ET
 import glob
 import os
-import json, time
 import statistics
 
 # input_dir = "./input/"

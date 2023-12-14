@@ -1,13 +1,15 @@
-import re
 import xml.etree.ElementTree as ET
 import glob
 import os
-import json, time
-import statistics
 
-# input_dir = "./input/"
-input_dir = "C:/Users/kacelab/Desktop/normal/Training/"
-output_dir = "labels/normal/training"
+
+input_dir_normal = "C:/Users/kacelab/Desktop/normal/Validation/"
+# input_dir_normal = "C:/Users/kacelab/Desktop/normal/training/"
+# input_dir_anomaly = "C:/Users/kacelab/Desktop/anomaly/Training/"
+input_dir_anomaly = "C:/Users/kacelab/Desktop/anomaly/Validation/"
+
+
+output_dir = "labels/anomaly/validation_anomaly"
 
 feature = ['Right foot', 'Right knee', 'Right  hip', 'Left hip',
            'Left knee', 'Left foot', 'Pelvis', 'Neck base', 'Right hand',
@@ -15,6 +17,9 @@ feature = ['Right foot', 'Right knee', 'Right  hip', 'Left hip',
            'Left hand', 'Center head', 'Spine naval', 'Spine chest']
 
 target_frame = 60
+
+normal = ["buying", "select", "compare", "return", "test"]
+anomaly = ["fall", "broken", "fight", "fire", "smoke", "theft"]
 
 
 def slice_string(arr):
@@ -27,12 +32,12 @@ def slice_string(arr):
 
 if not os.path.isdir(output_dir):
     os.mkdir(output_dir)
-normal = ["buying", "select", "compare", "return", "test"]
 
-for idx, item in enumerate(normal):
-    if idx == 1:
-        break
-    files = glob.glob(os.path.join(input_dir + item, f'*.xml'))
+for idx, item in enumerate(anomaly):
+    # if idx == 1:
+    #     break
+    print(f"{idx} start")
+    files = glob.glob(os.path.join(input_dir_anomaly + item, f'*.xml'))
     i = 0
     for file in files:
         result = []
@@ -89,7 +94,7 @@ for idx, item in enumerate(normal):
             with open(os.path.join(output_dir, f"{filename}_back_test.txt"), "a", encoding="utf-8") as f:
                 f.write(back_result)
         else:
-            integers = [str(num) for tpl in front for num in tpl]
+            integers = [str(num) for tpl in result for num in tpl]
             if len(integers) // 34 < target_frame:
                 while len(integers) / 34 < target_frame:
                     integers.append('0')

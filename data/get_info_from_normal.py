@@ -6,8 +6,7 @@ import json, time
 import statistics
 
 # input_dir = "./input/"
-input_dir = "C:/Users/kacelab/Desktop/normal/Training/"
-output_dir = "labels/"
+input_dir = "C:/Users/kacelab/Desktop/anomaly/Training/"
 
 feature = ['Right foot', 'Right knee', 'Right  hip', 'Left hip',
            'Left knee', 'Left foot', 'Pelvis', 'Neck base', 'Right hand',
@@ -16,11 +15,9 @@ feature = ['Right foot', 'Right knee', 'Right  hip', 'Left hip',
 
 # buying, select, compare, moving, return, test
 normal = ["buying", "select", "compare", "return", "test"]
+anomaly = ["fall", "broken", "fight", "fire", "smoke", "theft"]
 
-if not os.path.isdir(output_dir):
-    os.mkdir(output_dir)
-
-for idx, item in enumerate(normal):
+for idx, item in enumerate(anomaly):
     # if idx in [2, 3, 5]:
     #     continue
     files = glob.glob(os.path.join(input_dir + item, f'*.xml'))
