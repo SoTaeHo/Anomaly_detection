@@ -3,7 +3,8 @@ import glob
 import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import precision_recall_curve, roc_curve, auc, roc_auc_score
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -96,9 +97,9 @@ X_train, X_temp, y_train, y_temp = train_test_split(input, label, test_size=0.4,
 X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
 
 # 랜덤 포레스트 모델 생성 및 하이퍼파라미터 튜닝
-rf = RandomForestClassifier(random_state=42)
+rf = RandomForestClassifier(random_state=42, class_weight='balanced')
 param_grid = {
-    'n_estimators': [100, 200, 300, 500],
+    'n_estimators': [100, 200, 300],
     'max_depth': [10, 20, 30],
     'min_samples_split': [2, 5, 10],
     'min_samples_leaf': [1, 2, 4, 6],
@@ -120,14 +121,53 @@ print(classification_report(y_val, val_predictions))
 # 테스트 데이터에 대한 예측
 y_pred = best_rf.predict(X_test)
 
-# 성능 지표 출력 및 시각화
+# 성능 지표 출력
 print("Test Set Performance:")
 print(classification_report(y_test, y_pred))
 
 # 컨퓨전 매트릭스 시각화
 cm = confusion_matrix(y_test, y_pred)
-sns.heatmap(cm, annot=True, fmt='d')
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
 plt.title('Confusion Matrix')
-plt.ylabel('Actual')
-plt.xlabel('Predicted')
+plt.ylabel('Actual Label')
+plt.xlabel('Predicted Label')
 plt.show()
+
+# 모델의 클래스 확률 예측값을 계산 (1 클래스에 대한 확률)
+y_scores = best_rf.predict_proba(X_test)[:, 1]
+
+# 정밀도-재현율 곡선을 계산
+precision, recall, thresholds = precision_recall_curve(y_test, y_scores)
+
+# ROC 곡선을 계산
+fpr, tpr, roc_thresholds = roc_curve(y_test, y_scores)
+roc_auc = auc(fpr, tpr)
+
+# 정밀도-재현율 곡선 시각화
+plt.figure(figsize=(15, 5))
+
+plt.subplot(1, 2, 1)
+plt.step(recall, precision, where='post')
+plt.fill_between(recall, precision, step='post', alpha=0.2, color='b')
+plt.title('Precision-Recall curve')
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.ylim([0.0, 1.05])
+plt.xlim([0.0, 1.0])
+
+# ROC 곡선 시각화
+plt.subplot(1, 2, 2)
+plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (area = {roc_auc:.2f})')
+plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic')
+plt.legend(loc='lower right')
+
+plt.tight_layout()
+plt.show()
+
+print(f"ROC AUC score: {roc_auc_score(y_test, y_scores):.2f}")
